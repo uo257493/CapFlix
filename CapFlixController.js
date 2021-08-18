@@ -13,7 +13,7 @@ function searchMovies() {
         maxPages = 101;
     }
     lastQuery = document.getElementById("titulo").value;
-    while (currentPage <= Math.min(5, maxPages)){
+    while (currentPage <= maxPages){
     getMovies(lastQuery, currentPage)
     currentPage++;
     console.log(currentPage);
