@@ -65,6 +65,11 @@ async function getMovies(query, page) {
     row.className = "flex-row d-flex justify-content-center";
 
    await fetchMovies(query, page).then(response => {
+       if(response.totalResults == 0 || response.Response=="False"){
+        document.getElementById("miModal-aviso").style.display='block';
+        document.getElementById("textoModal").innerHTML = "No se han encontrado resultados";
+        return;
+       }
     if(maxPages==NaN||maxPages==101)
         maxPages = Math.floor(response.totalResults/10);
 
@@ -103,6 +108,11 @@ function getMovie(query) {
 
 function manageFetchMovie(response){
 
+    if(response.Response=="False"){
+        document.getElementById("miModal-aviso").style.display='block';
+        document.getElementById("textoModal").innerHTML = "No se puede encontrar la película";
+        return;
+    }
     document.getElementById("result").innerHTML = "";
     let row = document.createElement("div")
     row.className = "flex-row d-flex justify-content-center";
@@ -168,5 +178,9 @@ $(document).ready(function () {
         searchMovies();
       }, 1300);
     });
+
+    $("#cierraModalAviso").click(function(){
+        document.getElementById("miModal-aviso").style.display='none';
+    })
 
 });
