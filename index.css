@@ -9,3 +9,11 @@
 #header {
     color: red;
 }
+
+#result {
+    margin-top: 20px;
+}
+
+.movie {
+    margin-left: 5px;
+}
