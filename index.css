@@ -1,3 +1,25 @@
+body {
+    background-color: #232b2b;
+}
+
+input {
+    background-color: 	#414a4c;
+    color: white;
+}
+
+.display-1 {
+    text-shadow: 2px 2px white;
+  }
+
+.movieDetail {
+    background-color: 	#414a4c;
+    color: white;
+}  
+.movieDetail h1 {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
 #titulo {
     margin-top: 10px;
 }

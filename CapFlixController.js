@@ -1,6 +1,6 @@
 
 
-const API_KEY = "1e1e7271";
+const API_KEY = "88dce363";
 const URL_ALL = `http://www.omdbapi.com/?apikey=${API_KEY}&s=`;
 const URL_DETAIL = `http://www.omdbapi.com/?apikey=${API_KEY}&t=`;
 var lastQuery =""
@@ -10,10 +10,12 @@ var currentPage = 1;
 const result = document.getElementById('result');
 
 function searchMovies() {
-    currentPage = 1;
-    maxPages = 101
+    if (currentPage > 1){
+        currentPage = 1;
+        maxPages = 101;
+    }
     lastQuery = document.getElementById("titulo").value;
-    while (currentPage <= 5){
+    while (currentPage <= maxPages){
     getMovies(lastQuery, currentPage)
     currentPage++;
     console.log(currentPage);
@@ -103,7 +105,7 @@ function getMovie(query) {
         img.className = "img-fluid";
         img.src = response.Poster;
         let div = document.createElement("div");
-        div.className="card"
+        div.className="card movieDetail"
         let title = document.createElement("div");
         title.className = "card-title";
         let h1 = document.createElement("h1")
