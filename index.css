@@ -17,3 +17,12 @@
 .movie {
     margin-left: 5px;
 }
+
+.movieContainer {
+    max-width: 80%;
+    border: none;
+}
+
+.moviePosters {
+    max-width: 80%;
+}

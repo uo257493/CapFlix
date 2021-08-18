@@ -1,17 +1,38 @@
-const API_KEY = "1e1e7271";
+const API_KEY = "5366de43";
 const URL_ALL = `http://www.omdbapi.com/?apikey=${API_KEY}&s=`;
 const URL_DETAIL = `http://www.omdbapi.com/?apikey=${API_KEY}&t=`;
 var lastQuery =""
+var maxPages = 101;
+var currentPage = 1;
+
 const result = document.getElementById('result');
 
 function searchMovies() {
+    if (currentPage > 1){
+        currentPage = 1;
+        maxPages = 101;
+    }
     lastQuery = document.getElementById("titulo").value;
-    console.log(lastQuery);
-    getMovies(lastQuery)
+    while (currentPage <= Math.min(5, maxPages)){
+    getMovies(lastQuery, currentPage)
+    currentPage++;
+    console.log(currentPage);
+    }
 }
 
-async function fetchMovies(query) {
-    const respuesta = await fetch(URL_ALL+query+"&page=1", {
+function searchLast(){
+    currentPage = 1
+    console.log(currentPage);
+    console.log(lastQuery);
+    while (currentPage <= maxPages){
+        getMovies(lastQuery, currentPage)
+        currentPage++;
+        console.log(currentPage);
+        }
+}
+
+async function fetchMovies(query, page) {
+    const respuesta = await fetch(URL_ALL+query+"&page="+page, {
         method: 'GET', 
     mode: 'cors', 
     credentials: 'same-origin', 
@@ -35,12 +56,40 @@ async function fetchmovie(query){
     return respuesta.json();
 }
 
-function getMovies(query) {
+async function getMovies(query, page) {
     var result = document.getElementById("result");
     result.innerHTML = "";
-    
-    fetchMovies(query).then(response => listaPelis(response))
+    let movies= [];
 
+    let row = document.createElement("div");
+    row.className = "flex-row d-flex justify-content-center";
+
+   await fetchMovies(query, page).then(response => {
+    if(maxPages==NaN||maxPages==101)
+        maxPages = Math.floor(response.totalResults/10);
+
+        console.log(maxPages);
+        if(response.Search!=undefined){
+            movies = response.Search.forEach(movie => {
+                let container = document.createElement("div");
+                container.className = "container movieContainer";
+                let div = document.createElement("div");
+                div.className = "col movie"
+                let img = document.createElement("img");
+                if(movie.Poster=="N/A")	
+                    img.src = "noImage.png"
+                else
+                    img.src = movie.Poster;
+                img.className = "img-fluid"
+                img.onclick = function () {
+                    getDetail(movie);
+                };
+                div.appendChild(img);
+                container.appendChild(div)
+                row.appendChild(container);
+            })
+        } })
+    document.getElementById("result").appendChild(row);
 
 
     
@@ -48,17 +97,15 @@ function getMovies(query) {
 
 function getMovie(query) {
     console.log("desde getmovie");
-    fetchmovie(query).then(response => createElementMovie(response));
+    fetchmovie(query).then(response => manageFetchMovie(response)
+        );
 }
 
+function manageFetchMovie(response){
 
-function getDetail(movie) {
-    getMovie(movie.Title);
-
-}
-
-function createElementMovie(response){
     document.getElementById("result").innerHTML = "";
+    let row = document.createElement("div")
+    row.className = "flex-row d-flex justify-content-center";
     let img = document.createElement("img");
     img.className = "img-fluid";
     if(response.Poster=="N/A")
@@ -66,7 +113,7 @@ function createElementMovie(response){
     else
         img.src = response.Poster;
     let div = document.createElement("div");
-    div.className="card"
+    div.className="card movieDetail"
     let title = document.createElement("div");
     title.className = "card-title";
     let h1 = document.createElement("h1")
@@ -75,6 +122,7 @@ function createElementMovie(response){
     div.appendChild(title);
     let cardBody = document.createElement("div");
     cardBody.className = "card-body";
+    
     let year = document.createElement("p");
     year.innerHTML = response.Year
     cardBody.appendChild(year);
@@ -94,57 +142,31 @@ function createElementMovie(response){
     back.className ="btn btn-outline-secondary";
     back.innerHTML ="Back";
     back.onclick = function () {
-        getMovies(lastQuery);
+        searchLast();
     }
     cardBody.appendChild(back)
     div.appendChild(cardBody)
 
-    document.getElementById("result").appendChild(img);
-    document.getElementById("result").appendChild(div);
-    console.log(response)
+    row.appendChild(img)
+    row.appendChild(div);
+    document.getElementById("result").appendChild(row);
+    console.log(response)}
+
+function getDetail(movie) {
+    getMovie(movie.Title);
+
 }
 
 $(document).ready(function () {
 
-
-
-  
-        let timer;
-        const input = document.getElementById("titulo");
-        input.addEventListener("keyup", (e) => {
-          clearTimeout(timer);
-          timer = setTimeout(() => {
-            searchMovies();
-          }, 1300);
-        });
-
-        
-
-
-
+ 
+    let timer;
+    const input = document.getElementById("titulo");
+    input.addEventListener("keyup", (e) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        searchMovies();
+      }, 1300);
+    });
 
 });
-
-function listaPelis(response){
-    let movies= [];
-    if(response.Response == "False"){
-        alert("Se ha producido un error")
-        return;
-    }
-
-        movies = response.Search.forEach(movie => {
-        let div = document.createElement("div");
-        div.className = "col-1 movie"
-        let img = document.createElement("img");
-        if(movie.Poster=="N/A")
-            img.src = "noImage.png"
-        else
-            img.src = movie.Poster;
-        img.className = "img-fluid"
-        img.onclick = function () {
-            getDetail(movie);
-        };
-        div.appendChild(img);
-        document.getElementById("result").appendChild(div);
-    })
-}
