@@ -1,6 +1,6 @@
-const API_KEY = "5366de43";
-const URL_ALL = `http://www.omdbapi.com/?apikey=${API_KEY}&s=`;
-const URL_DETAIL = `http://www.omdbapi.com/?apikey=${API_KEY}&t=`;
+const API_KEY = "4c4699ef";
+const URL_ALL = `https://www.omdbapi.com/?apikey=${API_KEY}&s=`;
+const URL_DETAIL = `https://www.omdbapi.com/?apikey=${API_KEY}&t=`;
 var lastQuery =""
 var maxPages = 101;
 var currentPage = 1;
