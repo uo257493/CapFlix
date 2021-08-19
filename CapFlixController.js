@@ -13,7 +13,7 @@ function searchMovies() {
         maxPages = 101;
     }
     lastQuery = document.getElementById("titulo").value;
-    while (currentPage <= maxPages){
+    while (currentPage <= Math.min(5, maxPages)){
     getMovies(lastQuery, currentPage)
     currentPage++;
     console.log(currentPage);
@@ -65,16 +65,14 @@ async function getMovies(query, page) {
     row.className = "flex-row d-flex justify-content-center";
 
    await fetchMovies(query, page).then(response => {
-       if(response.totalResults == 0 || response.Response=="False"){
-        document.getElementById("miModal-aviso").style.display='block';
-        document.getElementById("textoModal").innerHTML = "No se han encontrado resultados";
-        return;
-       }
     if(maxPages==NaN||maxPages==101)
         maxPages = Math.floor(response.totalResults/10);
-
+		if((response.Response== "False" || response.Search.length==0) && page == 1){
+	        writeModal("No se han encontrado resultados")
+		}
         console.log(maxPages);
         if(response.Search!=undefined){
+            
             movies = response.Search.forEach(movie => {
                 let container = document.createElement("div");
                 container.className = "container movieContainer";
@@ -109,10 +107,10 @@ function getMovie(query) {
 function manageFetchMovie(response){
 
     if(response.Response=="False"){
-        document.getElementById("miModal-aviso").style.display='block';
-        document.getElementById("textoModal").innerHTML = "No se puede encontrar la película";
-        return;
-    }
+	writeModal("No se han encontrado resultados")
+	return;
+	}
+
     document.getElementById("result").innerHTML = "";
     let row = document.createElement("div")
     row.className = "flex-row d-flex justify-content-center";
@@ -178,9 +176,15 @@ $(document).ready(function () {
         searchMovies();
       }, 1300);
     });
-
-    $("#cierraModalAviso").click(function(){
-        document.getElementById("miModal-aviso").style.display='none';
-    })
+    $("#cierraModalAviso").click(()=>hideModal())
 
 });
+
+function writeModal(msg){
+    document.getElementById("miModal-aviso").style.display='block';
+    document.getElementById("textoModal").innerHTML = msg;
+}
+
+function hideModal(){
+    document.getElementById("miModal-aviso").style.display='none';
+}
